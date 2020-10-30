@@ -1,0 +1,15 @@
+# 模块的基础配置，创建模块后的最小化配置
+application:
+  # dev开发环境 test测试环境 prod线上环境 *
+  mode: dev
+  # 服务名称 *
+  name: guns-admin
+  # 端口号 *
+  port: 8000
+logger:
+  # 日志存放路径 *
+  path: /temp/admin/logs
+# 数据库配置
+database:
+  driver: mysql
+  source: root:123456@tcp(127.0.0.1:3306)/go_guns?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms
