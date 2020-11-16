@@ -1,4 +1,4 @@
-package models
+package model
 
 //casbin_rule
 type CasbinRule struct {

@@ -8,6 +8,6 @@ import (
 func InitAdminMiddleware(r *gin.Engine) {
 	// 公共的middleware
 	middleware.InitMiddleware(r)
-	// fixme 记录日志
-	r.Use(LoggerToFile())
+	// 记录到日志
+	r.Use(middleware.LoggerToFile())
 }

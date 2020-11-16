@@ -3,19 +3,10 @@ package system
 import (
 	"fmt"
 	"go-guns/database"
+	"go-guns/model"
 )
 
-//sys_role_dept
-type SysRoleDept struct {
-	RoleId int `gorm:""`
-	DeptId int `gorm:""`
-}
-
-func (SysRoleDept) TableName() string {
-	return "sys_role_dept"
-}
-
-func (rm *SysRoleDept) Insert(roleId int, deptIds []int) (bool, error) {
+func InsertRoleDept(roleId int, deptIds []int) (bool, error) {
 	//ORM不支持批量插入所以需要拼接 sql 串
 	sql := "INSERT INTO `sys_role_dept` (`role_id`,`dept_id`) VALUES "
 
@@ -32,12 +23,12 @@ func (rm *SysRoleDept) Insert(roleId int, deptIds []int) (bool, error) {
 	return true, nil
 }
 
-func (rm *SysRoleDept) DeleteRoleDept(roleId int) (bool, error) {
-	if err := database.Db.Table("sys_role_dept").Where("role_id = ?", roleId).Delete(&rm).Error; err != nil {
+func DeleteRoleDept(roleId int) (bool, error) {
+	if err := database.Db.Table("sys_role_dept").Where("role_id = ?", roleId).Delete(&model.SysRoleDept{}).Error; err != nil {
 		return false, err
 	}
-	var role Role
-	if err := database.Db.Table("sys_role").Where("role_id = ?", roleId).First(&role).Error; err != nil {
+	var role model.SysRole
+	if err := database.Db.First(&role, roleId).Error; err != nil {
 		return false, err
 	}
 

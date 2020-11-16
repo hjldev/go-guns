@@ -25,7 +25,7 @@ func Assert(condition bool, codeMsg ...interface{}) {
 // 若 msg 为空，则默认为 error 中的内容
 func HasError(err error, codeMsg ...interface{}) {
 	if err != nil {
-		statusCode := 200
+		statusCode := 500
 		msg := err.Error()
 		if len(codeMsg) > 0 {
 			statusCode = codeMsg[0].(int)

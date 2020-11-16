@@ -2,6 +2,7 @@ package admin
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-guns/middleware"
 	"go-guns/middleware/admin"
 )
 
@@ -12,7 +13,7 @@ func InitAdminRouter(r *gin.Engine) {
 	InitNoLoginRouter(g)
 
 	// 加载登录认证中间件
-	g.Use(admin.InitAuth())
+	g.Use(middleware.InitAuth())
 	InitNoRoleRouter(g)
 
 	// 加载权限中间件

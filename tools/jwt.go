@@ -2,14 +2,17 @@ package tools
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 	"go-guns/config"
+	"go-guns/global"
+	"strconv"
 	"time"
 )
 
 //Claim是一些实体（通常指的用户）的状态和额外的元数据
 type JwtAuth struct {
-	Username string `json:"username"`
-	Role     string `json:"role"`
+	UserId int    `json:"user_id"`
+	Role   string `json:"role"`
 	jwt.StandardClaims
 }
 
@@ -21,8 +24,8 @@ func GenerateToken(auth JwtAuth) (string, error) {
 	expireTime := nowTime.Add(timeout * time.Second)
 
 	claims := JwtAuth{
-		Username: auth.Username,
-		Role:     auth.Role,
+		UserId: auth.UserId,
+		Role:   auth.Role,
 		StandardClaims: jwt.StandardClaims{
 			// 过期时间
 			ExpiresAt: expireTime.Unix(),
@@ -58,4 +61,32 @@ func ParseToken(token string) (*JwtAuth, error) {
 	}
 	return nil, err
 
+}
+
+func GetUserFromClaims(c *gin.Context) JwtAuth {
+	if claims, ok := c.Get(global.AUTH_CLAIMS); ok {
+		user := (claims).(JwtAuth)
+		return user
+	}
+	return JwtAuth{}
+}
+
+func GetUserIdStr(c *gin.Context) string {
+	id := GetUserId(c)
+	return strconv.Itoa(id)
+}
+
+func GetUserId(c *gin.Context) int {
+	user := GetJwtAuth(c)
+	if user != nil {
+		return user.UserId
+	}
+	return 0
+}
+
+func GetJwtAuth(c *gin.Context) *JwtAuth {
+	if claims, ok := c.Get(global.AUTH_CLAIMS); ok {
+		return (claims).(*JwtAuth)
+	}
+	return nil
 }

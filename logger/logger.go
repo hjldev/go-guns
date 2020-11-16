@@ -18,5 +18,5 @@ func Setup() {
 }
 
 func Info(v ...interface{}) {
-	log.Println(v)
+	go log.Println(v)
 }
