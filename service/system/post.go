@@ -1,12 +1,12 @@
 package system
 
 import (
-	"go-guns/database"
-	"go-guns/model"
+	"go-guns/app/model"
+	"go-guns/boot"
 )
 
 func CreatePost(e model.SysPost) error {
-	result := database.Db.Create(&e)
+	result := boot.Db.Create(&e)
 	if result.Error != nil {
 		err := result.Error
 		return err
@@ -17,7 +17,7 @@ func CreatePost(e model.SysPost) error {
 func GetPost(e model.SysPost) (model.SysPost, error) {
 	var doc model.SysPost
 
-	table := database.Db
+	table := boot.Db
 	if e.PostId != 0 {
 		table = table.Where("post_id = ?", e.PostId)
 	}
@@ -40,7 +40,7 @@ func GetPost(e model.SysPost) (model.SysPost, error) {
 func GetPostList(e model.SysPost) ([]model.SysPost, error) {
 	var doc []model.SysPost
 
-	table := database.Db
+	table := boot.Db
 	if e.PostId != 0 {
 		table = table.Where("post_id = ?", e.PostId)
 	}
@@ -63,7 +63,7 @@ func GetPostList(e model.SysPost) ([]model.SysPost, error) {
 func GetPostPage(e model.SysPost, pageSize int, pageIndex int) ([]model.SysPost, int, error) {
 	var doc []model.SysPost
 
-	table := database.Db
+	table := boot.Db
 	if e.PostId != 0 {
 		table = table.Where("post_id = ?", e.PostId)
 	}
@@ -88,14 +88,14 @@ func GetPostPage(e model.SysPost, pageSize int, pageIndex int) ([]model.SysPost,
 
 func UpdatePost(e model.SysPost) (err error) {
 
-	if err = database.Db.Model(&e).Updates(&e).Error; err != nil {
+	if err = boot.Db.Model(&e).Updates(&e).Error; err != nil {
 		return
 	}
 	return
 }
 
 func DeletePost(id int) (success bool, err error) {
-	if err = database.Db.Delete(&model.SysPost{}, id).Error; err != nil {
+	if err = boot.Db.Delete(&model.SysPost{}, id).Error; err != nil {
 		success = false
 		return
 	}
@@ -104,7 +104,7 @@ func DeletePost(id int) (success bool, err error) {
 }
 
 func BatchDeletePost(ids []int) (Result bool, err error) {
-	if err = database.Db.Delete(&model.SysPost{}, ids).Error; err != nil {
+	if err = boot.Db.Delete(&model.SysPost{}, ids).Error; err != nil {
 		return
 	}
 	Result = true

@@ -1,11 +1,11 @@
-package config
+package boot
 
 import (
 	"fmt"
 	"github.com/spf13/viper"
 )
 
-func SetupEnv(module, env string) {
+func AdminBoot(module, env string) {
 	configFile := "config/" + module + "-" + env + ".yml"
 	vi := viper.New()
 	vi.SetConfigFile(configFile)
@@ -26,4 +26,5 @@ func SetupEnv(module, env string) {
 
 	InitJwt(vi.Sub("jwt"))
 
+	CasBinSetup()
 }

@@ -2,7 +2,7 @@ package system
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-guns/model"
+	"go-guns/app/model"
 	"go-guns/service/system"
 	"go-guns/tools"
 	"strconv"

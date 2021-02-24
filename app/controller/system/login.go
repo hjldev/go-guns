@@ -1,10 +1,10 @@
-package admin
+package system
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/mojocn/base64Captcha"
-	"go-guns/model"
+	"go-guns/app/model"
 	"go-guns/tools"
 )
 
@@ -21,4 +21,15 @@ func GenerateCaptcha(c *gin.Context) {
 		B64s: b64s,
 	}
 	tools.R(c, captcha)
+}
+
+func Login(ctx *gin.Context) {
+	token, err := tools.GenerateToken(tools.JwtAuth{
+		UserId: 1,
+		Role:   "admin",
+	})
+	tools.HasError(err)
+	tools.R(ctx, model.Token{
+		Token: token,
+	})
 }

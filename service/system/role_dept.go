@@ -2,8 +2,8 @@ package system
 
 import (
 	"fmt"
-	"go-guns/database"
-	"go-guns/model"
+	"go-guns/app/model"
+	"go-guns/boot"
 )
 
 func InsertRoleDept(roleId int, deptIds []int) (bool, error) {
@@ -18,17 +18,17 @@ func InsertRoleDept(roleId int, deptIds []int) (bool, error) {
 			sql += fmt.Sprintf("(%d,%d),", roleId, deptIds[i])
 		}
 	}
-	database.Db.Exec(sql)
+	boot.Db.Exec(sql)
 
 	return true, nil
 }
 
 func DeleteRoleDept(roleId int) (bool, error) {
-	if err := database.Db.Table("sys_role_dept").Where("role_id = ?", roleId).Delete(&model.SysRoleDept{}).Error; err != nil {
+	if err := boot.Db.Table("sys_role_dept").Where("role_id = ?", roleId).Delete(&model.SysRoleDept{}).Error; err != nil {
 		return false, err
 	}
 	var role model.SysRole
-	if err := database.Db.First(&role, roleId).Error; err != nil {
+	if err := boot.Db.First(&role, roleId).Error; err != nil {
 		return false, err
 	}
 

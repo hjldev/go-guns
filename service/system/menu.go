@@ -2,14 +2,14 @@ package system
 
 import (
 	"errors"
-	"go-guns/database"
-	"go-guns/model"
+	"go-guns/app/model"
+	"go-guns/boot"
 	"strconv"
 )
 
 func GetMenu(id int) (Menu model.SysMenu, err error) {
 
-	if err = database.Db.First(&Menu, id).Error; err != nil {
+	if err = boot.Db.First(&Menu, id).Error; err != nil {
 		return
 	}
 	return
@@ -130,7 +130,7 @@ func SetMenuRole(rolename string) (m []model.SysMenu, err error) {
 }
 
 func GetMenuByName(name string) (Menus []model.SysMenu, err error) {
-	table := database.Db.Table(model.SysMenuTableName)
+	table := boot.Db.Table(model.SysMenuTableName)
 	if name != "" {
 		table = table.Where("menu_name = ?", name)
 	}
@@ -141,7 +141,7 @@ func GetMenuByName(name string) (Menus []model.SysMenu, err error) {
 }
 
 func GetMenuByRoleName(rolename string) (Menus []model.SysMenu, err error) {
-	table := database.Db.Table(model.SysMenuTableName).Select("sys_menu.*").Joins("left join sys_role_menu on sys_role_menu.menu_id=sys_menu.menu_id")
+	table := boot.Db.Table(model.SysMenuTableName).Select("sys_menu.*").Joins("left join sys_role_menu on sys_role_menu.menu_id=sys_menu.menu_id")
 	table = table.Where("sys_role_menu.role_name=? and menu_type in ('M','C')", rolename)
 	if err = table.Order("sort").Find(&Menus).Error; err != nil {
 		return
@@ -150,7 +150,7 @@ func GetMenuByRoleName(rolename string) (Menus []model.SysMenu, err error) {
 }
 
 func GetMenuList(e model.SysMenu) (Menus []model.SysMenu, err error) {
-	table := database.Db.Table(model.SysMenuTableName)
+	table := boot.Db.Table(model.SysMenuTableName)
 	if e.MenuName != "" {
 		table = table.Where("menu_name = ?", e.MenuName)
 	}
@@ -171,7 +171,7 @@ func GetMenuList(e model.SysMenu) (Menus []model.SysMenu, err error) {
 }
 
 func GetMenuPage(e model.SysMenu) (Menus []model.SysMenu, err error) {
-	table := database.Db.Table(model.SysMenuTableName)
+	table := boot.Db.Table(model.SysMenuTableName)
 	if e.MenuName != "" {
 		table = table.Where("menu_name = ?", e.MenuName)
 	}
@@ -192,7 +192,7 @@ func GetMenuPage(e model.SysMenu) (Menus []model.SysMenu, err error) {
 }
 
 func CreateMenu(e model.SysMenu) (id int, err error) {
-	result := database.Db.Create(&e)
+	result := boot.Db.Create(&e)
 	if result.Error != nil {
 		err = result.Error
 		return
@@ -208,7 +208,7 @@ func CreateMenu(e model.SysMenu) (id int, err error) {
 func InitPaths(menu model.SysMenu) (err error) {
 	parentMenu := model.SysMenu{}
 	if menu.ParentId != 0 {
-		database.Db.Where("menu_id = ?", menu.ParentId).First(&parentMenu)
+		boot.Db.Where("menu_id = ?", menu.ParentId).First(&parentMenu)
 		if parentMenu.Paths == "" {
 			err = errors.New("父级paths异常，请尝试对当前节点父级菜单进行更新操作！")
 			return
@@ -217,12 +217,12 @@ func InitPaths(menu model.SysMenu) (err error) {
 	} else {
 		menu.Paths = "/0/" + strconv.Itoa(menu.MenuId)
 	}
-	database.Db.Model(&menu).Where("menu_id = ?", menu.MenuId).Update("paths", menu.Paths)
+	boot.Db.Model(&menu).Where("menu_id = ?", menu.MenuId).Update("paths", menu.Paths)
 	return
 }
 
 func UpdateMenu(e model.SysMenu) (err error) {
-	if err = database.Db.Model(&e).Updates(&e).Error; err != nil {
+	if err = boot.Db.Model(&e).Updates(&e).Error; err != nil {
 		return
 	}
 	err = InitPaths(e)
@@ -233,7 +233,7 @@ func UpdateMenu(e model.SysMenu) (err error) {
 }
 
 func DeleteMenu(id int) (success bool, err error) {
-	if err = database.Db.Delete(&model.SysMenu{}, id).Error; err != nil {
+	if err = boot.Db.Delete(&model.SysMenu{}, id).Error; err != nil {
 		success = false
 		return
 	}

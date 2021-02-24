@@ -1,13 +1,13 @@
 package system
 
 import (
-	"go-guns/database"
-	"go-guns/model"
+	"go-guns/app/model"
+	"go-guns/boot"
 )
 
 // 创建SysJob
 func CreateJob(e model.SysJob) error {
-	result := database.Db.Create(&e)
+	result := boot.Db.Create(&e)
 	if result.Error != nil {
 		err := result.Error
 		return err
@@ -17,7 +17,7 @@ func CreateJob(e model.SysJob) error {
 
 // 获取SysJob
 func GetJob(e model.SysJob) (model.SysJob, error) {
-	table := database.Db.Table(model.SysJobTableName)
+	table := boot.Db.Table(model.SysJobTableName)
 
 	if e.JobId != 0 {
 		table = table.Where("job_id = ?", e.JobId)
@@ -53,7 +53,7 @@ func GetJob(e model.SysJob) (model.SysJob, error) {
 func GetJobPage(e model.SysJob, pageSize int, pageIndex int) ([]model.SysJob, int, error) {
 	var doc []model.SysJob
 
-	table := database.Db.Select("*").Table(model.SysJobTableName)
+	table := boot.Db.Select("*").Table(model.SysJobTableName)
 
 	if e.JobId != 0 {
 		table = table.Where("job_id = ?", e.JobId)
@@ -91,7 +91,7 @@ func GetJobPage(e model.SysJob, pageSize int, pageIndex int) ([]model.SysJob, in
 func GetJobList() ([]model.SysJob, error) {
 	var doc []model.SysJob
 
-	if err := database.Db.Where("status = ?", 2).Find(&doc).Error; err != nil {
+	if err := boot.Db.Where("status = ?", 2).Find(&doc).Error; err != nil {
 		return nil, err
 	}
 	return doc, nil
@@ -100,7 +100,7 @@ func GetJobList() ([]model.SysJob, error) {
 // 更新SysJob
 func UpdateJob(e model.SysJob, id int) (update model.SysJob, err error) {
 
-	if err = database.Db.Model(&e).Updates(&e).Error; err != nil {
+	if err = boot.Db.Model(&e).Updates(&e).Error; err != nil {
 		return
 	}
 	return
@@ -108,7 +108,7 @@ func UpdateJob(e model.SysJob, id int) (update model.SysJob, err error) {
 
 func RemoveJobAllEntryID() (err error) {
 
-	if err = database.Db.Model(&model.SysJob{}).Updates(map[string]interface{}{"entry_id": 0}).Error; err != nil {
+	if err = boot.Db.Model(&model.SysJob{}).Updates(map[string]interface{}{"entry_id": 0}).Error; err != nil {
 		return
 	}
 	return
@@ -118,7 +118,7 @@ func RemoveJobEntryID(entryID int) (err error) {
 
 	//参数1:是要修改的数据
 	//参数2:是修改的数据
-	if err = database.Db.Model(&model.SysJob{}).Where("entry_id = ?", entryID).Updates(map[string]interface{}{"entry_id": 0}).Error; err != nil {
+	if err = boot.Db.Model(&model.SysJob{}).Where("entry_id = ?", entryID).Updates(map[string]interface{}{"entry_id": 0}).Error; err != nil {
 		return
 	}
 	return
@@ -126,7 +126,7 @@ func RemoveJobEntryID(entryID int) (err error) {
 
 // 删除SysJob
 func DeleteJob(id int) (success bool, err error) {
-	if err = database.Db.Delete(&model.SysJob{}, id).Error; err != nil {
+	if err = boot.Db.Delete(&model.SysJob{}, id).Error; err != nil {
 		success = false
 		return
 	}
@@ -136,7 +136,7 @@ func DeleteJob(id int) (success bool, err error) {
 
 //批量删除
 func BatchDeleteJob(id []int) (Result bool, err error) {
-	if err = database.Db.Delete(&model.SysJob{}, id).Error; err != nil {
+	if err = boot.Db.Delete(&model.SysJob{}, id).Error; err != nil {
 		return
 	}
 	Result = true

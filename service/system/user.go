@@ -2,21 +2,21 @@ package system
 
 import (
 	"errors"
-	"go-guns/database"
-	"go-guns/model"
+	"go-guns/app/model"
+	"go-guns/boot"
 	"go-guns/tools"
 	"strconv"
 )
 
 func GetUserById(id int) model.SysUser {
 	user := model.SysUser{}
-	database.Db.First(&user, id)
+	boot.Db.First(&user, id)
 	return user
 }
 
 func GetUserInfo(e model.SysUser) (SysUserView model.SysUserView, err error) {
 
-	table := database.Db.Table(model.SysUserTableName).Select([]string{"sys_user.*", "sys_role.role_name"})
+	table := boot.Db.Table(model.SysUserTableName).Select([]string{"sys_user.*", "sys_role.role_name"})
 	table = table.Joins("left join sys_role on sys_user.role_id=sys_role.role_id")
 	if e.UserId != 0 {
 		table = table.Where("user_id = ?", e.UserId)
@@ -50,7 +50,7 @@ func GetUserInfo(e model.SysUser) (SysUserView model.SysUserView, err error) {
 
 func GetUserList(e model.SysUser) (SysUserView []model.SysUserView, err error) {
 
-	table := database.Db.Table(e.TableName()).Select([]string{"sys_user.*", "sys_role.role_name"})
+	table := boot.Db.Table(e.TableName()).Select([]string{"sys_user.*", "sys_role.role_name"})
 	table = table.Joins("left join sys_role on sys_user.role_id=sys_role.role_id")
 	if e.UserId != 0 {
 		table = table.Where("user_id = ?", e.UserId)
@@ -84,7 +84,7 @@ func GetUserList(e model.SysUser) (SysUserView []model.SysUserView, err error) {
 
 func GetUserPage(e model.SysUser, pageSize int, pageIndex int) ([]model.SysUserPage, int, error) {
 	var doc []model.SysUserPage
-	table := database.Db.Select("sys_user.*,sys_dept.dept_name").Table(e.TableName())
+	table := boot.Db.Select("sys_user.*,sys_dept.dept_name").Table(e.TableName())
 	table = table.Joins("left join sys_dept on sys_dept.dept_id = sys_user.dept_id")
 
 	if e.Username != "" {
@@ -119,14 +119,14 @@ func InsertUser(e model.SysUser) (id int, err error) {
 	}
 	e.Password = pwd
 	var count int64
-	database.Db.Model(&model.SysUser{}).Where("username = ?", e.Username).Count(&count)
+	boot.Db.Model(&model.SysUser{}).Where("username = ?", e.Username).Count(&count)
 	if count > 0 {
 		err = errors.New("账户已存在！")
 		return
 	}
 
 	//添加数据
-	if err = database.Db.Create(&e).Error; err != nil {
+	if err = boot.Db.Create(&e).Error; err != nil {
 		return
 	}
 	id = e.UserId
@@ -141,18 +141,18 @@ func UpdateUser(update model.SysUser) (err error) {
 			return err
 		}
 	}
-	if err = database.Db.First(&update, update.UserId).Error; err != nil {
+	if err = boot.Db.First(&update, update.UserId).Error; err != nil {
 		return
 	}
 
-	if err = database.Db.Updates(&update).Error; err != nil {
+	if err = boot.Db.Updates(&update).Error; err != nil {
 		return
 	}
 	return
 }
 
 func BatchDeleteUser(id []int) (Result bool, err error) {
-	if err = database.Db.Delete(model.SysUser{}, id).Error; err != nil {
+	if err = boot.Db.Delete(model.SysUser{}, id).Error; err != nil {
 		return
 	}
 	Result = true

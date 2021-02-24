@@ -3,7 +3,7 @@ package tools
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"go-guns/config"
+	"go-guns/boot"
 	"go-guns/global"
 	"strconv"
 	"time"
@@ -20,7 +20,7 @@ type JwtAuth struct {
 func GenerateToken(auth JwtAuth) (string, error) {
 	//设置token有效时间
 	nowTime := time.Now()
-	timeout := (time.Duration)(config.JwtCfg.Timeout)
+	timeout := (time.Duration)(boot.JwtCfg.Timeout)
 	expireTime := nowTime.Add(timeout * time.Second)
 
 	claims := JwtAuth{
@@ -36,7 +36,7 @@ func GenerateToken(auth JwtAuth) (string, error) {
 
 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	// 指定加密密钥
-	var jwtSecret = []byte(config.JwtCfg.Secret)
+	var jwtSecret = []byte(boot.JwtCfg.Secret)
 	//该方法内部生成签名字符串，再用于获取完整、已签名的token
 	token, err := tokenClaims.SignedString(jwtSecret)
 	return token, err
@@ -46,7 +46,7 @@ func GenerateToken(auth JwtAuth) (string, error) {
 func ParseToken(token string) (*JwtAuth, error) {
 
 	// 指定加密密钥
-	var jwtSecret = []byte(config.JwtCfg.Secret)
+	var jwtSecret = []byte(boot.JwtCfg.Secret)
 	//用于解析鉴权的声明，方法内部主要是具体的解码和校验的过程，最终返回*Token
 	tokenClaims, err := jwt.ParseWithClaims(token, &JwtAuth{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtSecret, nil

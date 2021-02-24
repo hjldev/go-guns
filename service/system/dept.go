@@ -2,14 +2,14 @@ package system
 
 import (
 	"errors"
-	"go-guns/database"
-	"go-guns/model"
+	"go-guns/app/model"
+	"go-guns/boot"
 	"go-guns/tools"
 	"strconv"
 )
 
 func CreateDept(e model.SysDept) (err error) {
-	result := database.Db.Create(&e)
+	result := boot.Db.Create(&e)
 	if result.Error != nil {
 		err := result.Error
 		return err
@@ -17,12 +17,12 @@ func CreateDept(e model.SysDept) (err error) {
 	deptPath := "/" + strconv.Itoa(e.DeptId)
 	if e.ParentId != 0 {
 		var deptP model.SysDept
-		database.Db.Where("dept_id = ?", e.ParentId).First(&deptP)
+		boot.Db.Where("dept_id = ?", e.ParentId).First(&deptP)
 		deptPath = deptP.DeptPath + deptPath
 	} else {
 		deptPath = "/0" + deptPath
 	}
-	if err := database.Db.Model(&e).Where("dept_id = ?", e.DeptId).Update("deptPath", deptPath).Error; err != nil {
+	if err := boot.Db.Model(&e).Where("dept_id = ?", e.DeptId).Update("deptPath", deptPath).Error; err != nil {
 		err := result.Error
 		return err
 	}
@@ -32,7 +32,7 @@ func CreateDept(e model.SysDept) (err error) {
 
 func GetDept(e model.SysDept) (model.SysDept, error) {
 
-	table := database.Db.Table(model.SysDeptTableName)
+	table := boot.Db.Table(model.SysDeptTableName)
 	if e.DeptId != 0 {
 		table = table.Where("dept_id = ?", e.DeptId)
 	}
@@ -49,7 +49,7 @@ func GetDept(e model.SysDept) (model.SysDept, error) {
 func GetDeptList(e model.SysDept) ([]model.SysDept, error) {
 	var doc []model.SysDept
 
-	table := database.Db.Table(model.SysDeptTableName)
+	table := boot.Db.Table(model.SysDeptTableName)
 	if e.DeptId != 0 {
 		table = table.Where("dept_id = ?", e.DeptId)
 	}
@@ -69,7 +69,7 @@ func GetDeptList(e model.SysDept) ([]model.SysDept, error) {
 func GetDeptPage(e model.SysDept) ([]model.SysDept, error) {
 	var doc []model.SysDept
 
-	table := database.Db.Select("*").Table(model.SysDeptTableName)
+	table := boot.Db.Select("*").Table(model.SysDeptTableName)
 	if e.DeptId != 0 {
 		table = table.Where("dept_id = ?", e.DeptId)
 	}
@@ -134,14 +134,14 @@ func DiguiSysDept(deptlist *[]model.SysDept, menu model.SysDept) model.SysDept {
 
 func UpdateDept(e model.SysDept) (err error) {
 	var update model.SysDept
-	if err = database.Db.Where("dept_id = ?", e.DeptId).First(&update).Error; err != nil {
+	if err = boot.Db.Where("dept_id = ?", e.DeptId).First(&update).Error; err != nil {
 		return
 	}
 
 	deptPath := "/" + strconv.Itoa(e.DeptId)
 	if int(e.ParentId) != 0 {
 		var deptP model.SysDept
-		database.Db.Where("dept_id = ?", e.ParentId).First(&deptP)
+		boot.Db.Where("dept_id = ?", e.ParentId).First(&deptP)
 		deptPath = deptP.DeptPath + deptPath
 	} else {
 		deptPath = "/0" + deptPath
@@ -154,7 +154,7 @@ func UpdateDept(e model.SysDept) (err error) {
 
 	//参数1:是要修改的数据
 	//参数2:是修改的数据
-	if err = database.Db.Model(&update).Updates(&e).Error; err != nil {
+	if err = boot.Db.Model(&update).Updates(&e).Error; err != nil {
 		return
 	}
 
@@ -169,7 +169,7 @@ func DeleteDept(e model.SysDept) (success bool, err error) {
 	tools.HasError(err, 500, "")
 	tools.Assert(len(userlist) <= 0, "当前部门存在用户，不能删除！", 500)
 
-	tx := database.Db.Begin()
+	tx := boot.Db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()

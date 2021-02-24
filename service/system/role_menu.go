@@ -2,13 +2,13 @@ package system
 
 import (
 	"fmt"
-	"go-guns/database"
-	"go-guns/model"
+	"go-guns/app/model"
+	"go-guns/boot"
 )
 
 func GetRoleMenu(rm model.SysRoleMenu) ([]model.SysRoleMenu, error) {
 	var r []model.SysRoleMenu
-	table := database.Db.Table("sys_role_menu")
+	table := boot.Db.Table("sys_role_menu")
 	if rm.RoleId != 0 {
 		table = table.Where("role_id = ?", rm.RoleId)
 
@@ -21,7 +21,7 @@ func GetRoleMenu(rm model.SysRoleMenu) ([]model.SysRoleMenu, error) {
 
 func GetPermisRoleMenu(rm model.SysRoleMenu) ([]string, error) {
 	var r []model.SysMenu
-	table := database.Db.Select("sys_menu.permission").Table("sys_menu").Joins("left join sys_role_menu on sys_menu.menu_id = sys_role_menu.menu_id")
+	table := boot.Db.Select("sys_menu.permission").Table("sys_menu").Joins("left join sys_role_menu on sys_menu.menu_id = sys_role_menu.menu_id")
 
 	table = table.Where("role_id = ?", rm.RoleId)
 
@@ -38,7 +38,7 @@ func GetPermisRoleMenu(rm model.SysRoleMenu) ([]string, error) {
 
 func GetRoleMenuIds(rm model.SysRoleMenu) ([]model.MenuPath, error) {
 	var r []model.MenuPath
-	table := database.Db.Select("sys_menu.path").Table("sys_role_menu")
+	table := boot.Db.Select("sys_menu.path").Table("sys_role_menu")
 	table = table.Joins("left join sys_role on sys_role.role_id=sys_role_menu.role_id")
 	table = table.Joins("left join sys_menu on sys_menu.id=sys_role_menu.menu_id")
 	table = table.Where("sys_role.role_name = ? and sys_menu.type=1", rm.RoleName)
@@ -49,7 +49,7 @@ func GetRoleMenuIds(rm model.SysRoleMenu) ([]model.MenuPath, error) {
 }
 
 func DeleteRoleMenu(roleId int) (bool, error) {
-	tx := database.Db.Begin()
+	tx := boot.Db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
@@ -87,7 +87,7 @@ func DeleteRoleMenu(roleId int) (bool, error) {
 }
 
 func BatchDeleteRoleMenu(roleIds []int) (bool, error) {
-	tx := database.Db.Begin()
+	tx := boot.Db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
@@ -124,7 +124,7 @@ func BatchDeleteRoleMenu(roleIds []int) (bool, error) {
 
 func InsertRoleMenu(rm model.SysRoleMenu, roleId int, menuId []int) (bool, error) {
 	var role model.SysRole
-	tx := database.Db.Begin()
+	tx := boot.Db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
@@ -177,7 +177,7 @@ func InsertRoleMenu(rm model.SysRoleMenu, roleId int, menuId []int) (bool, error
 }
 
 func DeleteRoleMenuById(RoleId string, MenuID string) (bool, error) {
-	table := database.Db.Model(model.SysRoleMenu{}).Where("role_id = ?", RoleId)
+	table := boot.Db.Model(model.SysRoleMenu{}).Where("role_id = ?", RoleId)
 	if MenuID != "" {
 		table = table.Where("menu_id = ?", MenuID)
 	}

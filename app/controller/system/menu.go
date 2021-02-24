@@ -3,7 +3,7 @@ package system
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"go-guns/model"
+	"go-guns/app/model"
 	"go-guns/service/system"
 	"go-guns/tools"
 	"net/http"

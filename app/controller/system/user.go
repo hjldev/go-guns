@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
-	"go-guns/model"
+	"go-guns/app/model"
 	"go-guns/service/system"
 	"go-guns/tools"
 	"net/http"

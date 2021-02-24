@@ -2,8 +2,7 @@ package admin
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-guns/apis/admin"
-	"go-guns/apis/admin/system/user"
+	"go-guns/app/controller/system"
 	"go-guns/tools"
 )
 
@@ -12,6 +11,6 @@ func InitNoLoginRouter(g *gin.RouterGroup) {
 		tools.R(c)
 	})
 
-	g.GET("/captcha", admin.GenerateCaptcha)
-	g.GET("/login", user.Login)
+	g.GET("/captcha", system.GenerateCaptcha)
+	g.POST("/login", system.Login)
 }

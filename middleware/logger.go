@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-guns/logger"
+	"log"
 	"time"
 )
 
@@ -34,6 +34,6 @@ func LoggerToFile() gin.HandlerFunc {
 		// 请求IP
 		clientIP := c.ClientIP()
 
-		logger.Info(statusCode, latencyTime, clientIP, reqMethod, reqUri)
+		go log.Println(statusCode, latencyTime, clientIP, reqMethod, reqUri)
 	}
 }

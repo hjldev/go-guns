@@ -2,14 +2,14 @@ package system
 
 import (
 	"errors"
-	"go-guns/database"
-	"go-guns/model"
+	"go-guns/app/model"
+	"go-guns/boot"
 )
 
 func GetRolePage(role model.SysRole, pageSize int, pageIndex int) ([]model.SysRole, int, error) {
 	var doc []model.SysRole
 
-	table := database.Db
+	table := boot.Db
 	if role.RoleId != 0 {
 		table = table.Where("role_id = ?", role.RoleId)
 	}
@@ -33,7 +33,7 @@ func GetRolePage(role model.SysRole, pageSize int, pageIndex int) ([]model.SysRo
 }
 
 func GetRole(role model.SysRole) (SysRole model.SysRole, err error) {
-	table := database.Db
+	table := boot.Db
 	if role.RoleId != 0 {
 		table = table.Where("role_id = ?", role.RoleId)
 	}
@@ -48,7 +48,7 @@ func GetRole(role model.SysRole) (SysRole model.SysRole, err error) {
 }
 
 func GetRoleList(role model.SysRole) (SysRole []model.SysRole, err error) {
-	table := database.Db
+	table := boot.Db
 	if role.RoleId != 0 {
 		table = table.Where("role_id = ?", role.RoleId)
 	}
@@ -66,7 +66,7 @@ func GetRoleList(role model.SysRole) (SysRole []model.SysRole, err error) {
 func GetRoleMeunId(role model.SysRole) ([]int, error) {
 	menuIds := make([]int, 0)
 	menuList := make([]model.SysMenuIdList, 0)
-	if err := database.Db.Table("sys_role_menu").Select("sys_role_menu.menu_id").Where("role_id = ? ", role.RoleId).Where(" sys_role_menu.menu_id not in(select sys_menu.parent_id from sys_role_menu LEFT JOIN sys_menu on sys_menu.menu_id=sys_role_menu.menu_id where role_id =?  and parent_id is not null)", role.RoleId).Find(&menuList).Error; err != nil {
+	if err := boot.Db.Table("sys_role_menu").Select("sys_role_menu.menu_id").Where("role_id = ? ", role.RoleId).Where(" sys_role_menu.menu_id not in(select sys_menu.parent_id from sys_role_menu LEFT JOIN sys_menu on sys_menu.menu_id=sys_role_menu.menu_id where role_id =?  and parent_id is not null)", role.RoleId).Find(&menuList).Error; err != nil {
 		return nil, err
 	}
 
@@ -78,12 +78,12 @@ func GetRoleMeunId(role model.SysRole) ([]int, error) {
 
 func InsertRole(role model.SysRole) (id int, err error) {
 	var i int64 = 0
-	database.Db.Model(&role).Where("role_name=? or role_key = ?", role.RoleName, role.RoleKey).Count(&i)
+	boot.Db.Model(&role).Where("role_name=? or role_key = ?", role.RoleName, role.RoleKey).Count(&i)
 	if i > 0 {
 		return 0, errors.New("角色名称或者角色标识已经存在！")
 	}
 	role.UpdateBy = ""
-	result := database.Db.Create(&role)
+	result := boot.Db.Create(&role)
 	if result.Error != nil {
 		err = result.Error
 		return
@@ -99,7 +99,7 @@ type DeptIdList struct {
 func GetRoleDeptId(role model.SysRole) ([]int, error) {
 	deptIds := make([]int, 0)
 	deptList := make([]DeptIdList, 0)
-	if err := database.Db.Table("sys_role_dept").Select("sys_role_dept.dept_id").Joins("LEFT JOIN sys_dept on sys_dept.dept_id=sys_role_dept.dept_id").Where("role_id = ? ", role.RoleId).Where(" sys_role_dept.dept_id not in(select sys_dept.parent_id from sys_role_dept LEFT JOIN sys_dept on sys_dept.dept_id=sys_role_dept.dept_id where role_id =? )", role.RoleId).Find(&deptList).Error; err != nil {
+	if err := boot.Db.Table("sys_role_dept").Select("sys_role_dept.dept_id").Joins("LEFT JOIN sys_dept on sys_dept.dept_id=sys_role_dept.dept_id").Where("role_id = ? ", role.RoleId).Where(" sys_role_dept.dept_id not in(select sys_dept.parent_id from sys_role_dept LEFT JOIN sys_dept on sys_dept.dept_id=sys_role_dept.dept_id where role_id =? )", role.RoleId).Find(&deptList).Error; err != nil {
 		return nil, err
 	}
 
@@ -113,7 +113,7 @@ func GetRoleDeptId(role model.SysRole) ([]int, error) {
 //修改
 func UpdateRole(role model.SysRole) (err error) {
 	var r model.SysRole
-	if err = database.Db.First(&r, role.RoleId).Error; err != nil {
+	if err = boot.Db.First(&r, role.RoleId).Error; err != nil {
 		return
 	}
 
@@ -125,7 +125,7 @@ func UpdateRole(role model.SysRole) (err error) {
 		return errors.New("角色标识不允许修改！")
 	}
 
-	if err = database.Db.Model(&role).Updates(&role).Error; err != nil {
+	if err = boot.Db.Model(&role).Updates(&role).Error; err != nil {
 		return
 	}
 	return
@@ -133,7 +133,7 @@ func UpdateRole(role model.SysRole) (err error) {
 
 //批量删除
 func BatchDeleteRole(id []int) (Result bool, err error) {
-	if err = database.Db.Delete(&model.SysRole{}, id).Error; err != nil {
+	if err = boot.Db.Delete(&model.SysRole{}, id).Error; err != nil {
 		return
 	}
 	Result = true

@@ -1,8 +1,8 @@
-package admin
+package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-guns/casbin"
+	"go-guns/boot"
 	"go-guns/global"
 	"go-guns/tools"
 	"net/http"
@@ -12,11 +12,11 @@ func InitRBAC() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		if claims, ok := c.Get(global.AUTH_CLAIMS); ok {
-			e, err := casbin.CasBin()
+			e, err := boot.CasBin()
 			tools.HasError(err, 500)
 			res, err := e.Enforce((claims).(*tools.JwtAuth).Role, c.Request.URL.Path, c.Request.Method)
 
-			if res {
+			if res || (claims).(*tools.JwtAuth).Role == "admin" {
 				c.Next()
 				return
 			}

@@ -1,11 +1,10 @@
-package casbin
+package boot
 
 import (
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
-	"go-guns/database"
-	"go-guns/logger"
+	"log"
 )
 
 // Initialize the model from a string.
@@ -25,8 +24,8 @@ m = r.sub == p.sub && (keyMatch2(r.obj, p.obj) || keyMatch(r.obj, p.obj)) && (r.
 
 var syncedEnforcer *casbin.SyncedEnforcer
 
-func Setup() {
-	Apter, err := gormadapter.NewAdapterByDB(database.Db)
+func CasBinSetup() {
+	Apter, err := gormadapter.NewAdapterByDB(Db)
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +43,7 @@ func CasBin() (*casbin.SyncedEnforcer, error) {
 	if err := syncedEnforcer.LoadPolicy(); err == nil {
 		return syncedEnforcer, err
 	} else {
-		logger.Info("casbin rbac_model or policy init error, message: ", err.Error())
+		log.Println("casbin rbac_model or policy init error, message: ", err.Error())
 		return nil, err
 	}
 }
