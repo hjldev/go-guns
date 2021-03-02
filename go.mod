@@ -10,7 +10,6 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/mojocn/base64Captcha v1.3.1
 	github.com/satori/go.uuid v1.2.0
-	github.com/spf13/cobra v1.1.1
 	github.com/spf13/viper v1.7.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

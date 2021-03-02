@@ -2,8 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-guns/app/admin/system/user"
-	"go-guns/app/controller/admin"
+	"go-guns/app/controller/system"
 	"go-guns/middleware"
 	"go-guns/tools"
 )
@@ -16,11 +15,11 @@ func InitAdminRouter(r *gin.Engine) {
 		tools.R(c)
 	})
 	g.GET("/captcha", system.GenerateCaptcha)
-	g.POST("/login", user.Login)
+	g.POST("/login", system.Login)
 
 	// 加载登录认证中间件
 	g.Use(middleware.InitAuth())
-	g.GET("/userInfo", user.Info)
+	g.GET("/userInfo", system.UserInfo)
 
 	// 加载权限中间件
 	g.Use(middleware.InitRBAC())

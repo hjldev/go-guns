@@ -244,7 +244,7 @@ func SysUserUpdatePwd(c *gin.Context) {
 	tools.R(c)
 }
 
-func GetInfo(c *gin.Context) {
+func UserInfo(c *gin.Context) {
 
 	var roles = make([]string, 1)
 	jwtAuth := tools.GetJwtAuth(c)

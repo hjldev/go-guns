@@ -2,9 +2,9 @@ package admin
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-guns/app/admin/system/user"
+	"go-guns/app/controller/system"
 )
 
 func InitNoRoleRouter(g *gin.RouterGroup) {
-	g.GET("/userInfo", user.Info)
+	g.GET("/userInfo", system.UserInfo)
 }

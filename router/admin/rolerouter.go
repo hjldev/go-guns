@@ -28,7 +28,7 @@ func registerPageRouter(g *gin.RouterGroup) {
 
 func registerBaseRouter(g *gin.RouterGroup) {
 
-	g.GET("/getinfo", system.GetInfo)
+	g.GET("/getinfo", system.UserInfo)
 	g.GET("/menurole", system.GetMenuRole)
 	g.PUT("/roledatascope", system.UpdateRoleDataScope)
 	g.GET("/roleMenuTreeselect/:roleId", system.GetMenuTreeRoleselect)

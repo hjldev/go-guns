@@ -63,12 +63,12 @@ func ParseToken(token string) (*JwtAuth, error) {
 
 }
 
-func GetUserFromClaims(c *gin.Context) JwtAuth {
+func GetUserFromClaims(c *gin.Context) *JwtAuth {
 	if claims, ok := c.Get(global.AUTH_CLAIMS); ok {
-		user := (claims).(JwtAuth)
+		user := (claims).(*JwtAuth)
 		return user
 	}
-	return JwtAuth{}
+	return nil
 }
 
 func GetUserIdStr(c *gin.Context) string {
