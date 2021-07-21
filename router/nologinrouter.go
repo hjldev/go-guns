@@ -1,9 +1,10 @@
-package admin
+package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"go-guns/app/controller/system"
 	"go-guns/tools"
+
+	"github.com/gin-gonic/gin"
 )
 
 func InitNoLoginRouter(g *gin.RouterGroup) {

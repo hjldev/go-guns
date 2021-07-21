@@ -3,14 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"go-guns/boot"
 	"go-guns/global"
 	"go-guns/middleware"
-	"go-guns/router/admin"
+	"go-guns/router"
 	"log"
 	"os"
 	"os/signal"
+
+	"github.com/gin-gonic/gin"
 )
 
 var serverName string
@@ -24,15 +25,10 @@ func init() {
 func main() {
 	flag.Parse()
 
-	switch serverName {
-	case "admin":
-		adminServer()
-	default:
-		fmt.Println("no service")
-	}
+	startServer()
 }
 
-func adminServer() {
+func startServer() {
 	// 读取配置并初始化
 	boot.AdminBoot("admin", "dev")
 
@@ -44,7 +40,7 @@ func adminServer() {
 	// 加载中间件
 	middleware.InitAdminMiddleware(r)
 	// 注册系统路由
-	admin.InitAdminRouter(r)
+	router.InitAdminRouter(r)
 
 	// 启动
 	err := r.Run(":" + boot.AppCfg.Port)

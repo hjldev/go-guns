@@ -1,8 +1,9 @@
-package admin
+package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"go-guns/app/controller/system"
+
+	"github.com/gin-gonic/gin"
 )
 
 func InitRoleRouter(g *gin.RouterGroup) {
