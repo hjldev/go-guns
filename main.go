@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"go-guns/boot"
-	"go-guns/global"
 	"go-guns/middleware"
 	"go-guns/router"
 	"log"
@@ -33,7 +32,7 @@ func startServer() {
 	boot.AdminBoot("admin", "dev")
 
 	log.Println("guns run server")
-	if global.Env == global.PROD {
+	if boot.AppCfg.Mode == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.Default()
